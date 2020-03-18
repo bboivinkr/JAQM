@@ -97,7 +97,7 @@ curseforge {
         apiKey = project.getProperty('unreal_curse_api_key')
     }
     project {
-        id = "000000"
+        id = "368190"
         changelog = getGitChangelog
         changelogType = 'markdown'
         releaseType = 'release'
