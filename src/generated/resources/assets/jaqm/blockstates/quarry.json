@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "jaqm:block/quarry"
+    },
+    "facing=south": {
+      "model": "jaqm:block/quarry",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "jaqm:block/quarry",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "jaqm:block/quarry",
+      "y": 90
+    }
+  }
+}

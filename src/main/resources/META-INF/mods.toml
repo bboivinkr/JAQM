@@ -1,0 +1,10 @@
+modLoader="javafml" #mandatory
+loaderVersion="[30,)" #mandatory (26 is current forge version)
+[[mods]] #mandatory
+modId="jaqm" #mandatory
+version="${file.jarVersion}" #mandatory
+displayName="Just Another Quary Mod" #mandatory
+# The description text for the mod (multi line!) (#mandatory)
+description='''
+The Magic Quary
+'''

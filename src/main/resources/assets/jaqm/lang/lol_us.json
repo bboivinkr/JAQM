@@ -1,0 +1,9 @@
+{
+  "item.jaqm.biome_marker" : "Bioem Markah",
+  "tooltip.biome_marker.biome" : "Bioem: %s",
+  "block.jaqm.quarry" : "Quarwee",
+  "message.setBiomeTo" : "Set bioem 2: %s",
+  "tooltip.biome_marker.usage" : "Put in itemfraem attachd 2 frunt ov quarwee",
+  "itemGroup.jaqm" : "us anofr Quarwee Mod"
+
+}

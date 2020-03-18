@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "jaqm",
+  "pattern": [
+    "EPE",
+    "ESE",
+    "OTO"
+  ],
+  "key": {
+    "E": {
+      "tag": "forge:end_stones"
+    },
+    "P": {
+      "item": "minecraft:diamond_pickaxe"
+    },
+    "S": {
+      "tag": "forge:nether_stars"
+    },
+    "O": {
+      "tag": "forge:obsidian"
+    },
+    "T": {
+      "item": "jaqm:biome_marker"
+    }
+  },
+  "result": {
+    "item": "jaqm:quarry"
+  }
+}

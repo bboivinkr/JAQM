@@ -1,0 +1,8 @@
+{
+  "item.jaqm.biome_marker" : "Biome Marker",
+  "tooltip.biome_marker.biome" : "Biome: %s",
+  "block.jaqm.quarry" : "Quarry",
+  "message.setBiomeTo" : "Set Biome To: %s",
+  "tooltip.biome_marker.usage" : "Put in itemframe attached to front of quarry",
+  "itemGroup.jaqm" : "Just Another Quarry Mod"
+}

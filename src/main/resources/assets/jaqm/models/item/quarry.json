@@ -1,0 +1,8 @@
+{
+  "parent": "block/orientable",
+  "textures": {
+    "side": "jaqm:block/quarry/side",
+    "front": "jaqm:block/quarry/front",
+    "top": "block/obsidian"
+  }
+}
