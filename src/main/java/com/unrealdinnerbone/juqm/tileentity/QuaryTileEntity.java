@@ -3,82 +3,123 @@ package com.unrealdinnerbone.juqm.tileentity;
 import com.unrealdinnerbone.juqm.JAQM;
 import com.unrealdinnerbone.juqm.JAQMItems;
 import com.unrealdinnerbone.juqm.JAQMTileEntities;
+import com.unrealdinnerbone.juqm.api.IOreGiver;
+import com.unrealdinnerbone.juqm.api.IStoneSuppler;
 import com.unrealdinnerbone.juqm.blocks.QuarryBlock;
 import com.unrealdinnerbone.juqm.energy.JAQMEnergyStorage;
+import com.unrealdinnerbone.juqm.items.BiomeMakerItem;
+import com.unrealdinnerbone.juqm.util.SidedBlockHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemFrameEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class QuaryTileEntity extends TileEntity implements ITickableTileEntity {
 
+    private static final Direction[] DIRECTIONS = Direction.values();
+
     private final LazyOptional<JAQMEnergyStorage> energyStorage;
+    private final List<SidedBlockHandler<IStoneSuppler>> inputHandles;
+    private final List<SidedBlockHandler<IOreGiver>> outputHandles;
+    private final AtomicReference<Biome> biome;
+    private BlockState oreBlockState;
 
     public QuaryTileEntity() {
         super(JAQMTileEntities.QUARY.getTileEntityType());
-        energyStorage = LazyOptional.of(() -> new JAQMEnergyStorage(JAQM.maxStorage.get(), JAQM.maxReceive.get()));
+        energyStorage = LazyOptional.of(() -> new JAQMEnergyStorage(JAQM.QUARRY));
+        inputHandles = new ArrayList<>();
+        outputHandles = new ArrayList<>();
+        biome = new AtomicReference<>();
     }
 
     @Override
     public void tick() {
         if (!world.isRemote()) {
             energyStorage.ifPresent(jaqmEnergyStorage -> {
-                int needed = JAQM.usagePerBlock.get();
-                if (jaqmEnergyStorage.getEnergyStored() > needed) {
-                    BlockPos aboveBlockPos = pos.up();
-                    BlockState blockAbove = world.getBlockState(aboveBlockPos);
-                    if(blockAbove.getBlock().isIn(Tags.Blocks.STONE)) {
-                        Direction direction = world.getBlockState(pos).get(QuarryBlock.FACING);
-                        List<ItemFrameEntity> itemFrameEntities = world.getEntitiesWithinAABB(ItemFrameEntity.class, new AxisAlignedBB(pos.offset(direction)));
-                        Optional<ItemFrameEntity> itemFrameEntity = itemFrameEntities.stream().findFirst();
-                        AtomicReference<Biome> biome = new AtomicReference<>(world.getBiome(pos));
-                        itemFrameEntity.ifPresent(itemFrameEntity1 -> {
-                            if(itemFrameEntity1.getDisplayedItem().getItem() == JAQMItems.BIOME_MARKER.getItem()) {
-                                biome.set(ForgeRegistries.BIOMES.getValue(new ResourceLocation(itemFrameEntity1.getDisplayedItem().getOrCreateChildTag("data").getString("biome"))));
+                for (SidedBlockHandler<IStoneSuppler> inputHandle : inputHandles) {
+
+                    if (jaqmEnergyStorage.getEnergyStored() >= inputHandle.get().getConfig().getUsagePerOperation()) {
+                        int needEnergy = inputHandle.get().getConfig().getUsagePerOperation();
+                        if (inputHandle.get().hasStone(world, inputHandle.getDirection(), pos.offset(inputHandle.getDirection()))) {
+                            for (SidedBlockHandler<IOreGiver> outputHandle : outputHandles) {
+                                if (outputHandle.get().getConfig().getUsagePerOperation() + JAQM.QUARRY.getUsagePerOperation() + inputHandle.get().getConfig().getUsagePerOperation() <= jaqmEnergyStorage.getEnergyStored()) {
+                                    needEnergy += outputHandle.get().getConfig().getUsagePerOperation() + inputHandle.get().getConfig().getUsagePerOperation();
+                                    if (outputHandle.get().hasAir(oreBlockState, world, outputHandle.getDirection(), pos.offset(outputHandle.getDirection()))) {
+                                        if (inputHandle.get().supplyStone(world, inputHandle.getDirection(), pos.offset(inputHandle.getDirection()))) {
+                                            if (outputHandle.get().giveOre(oreBlockState, world, outputHandle.getDirection(), pos.offset(outputHandle.getDirection()))) {
+                                                updateOreBlockState();
+                                                jaqmEnergyStorage.removeEnergy(needEnergy + JAQM.QUARRY.getUsagePerOperation());
+                                            }
+                                        }
+                                    }
+                                    break;
+                                }
                             }
-                        });
-                        BlockState blockState = JAQM.ORE_DISTRIBUTIONS.getOre(biome.get());
-                        if(blockState != null) {
-                            world.setBlockState(aboveBlockPos, blockState);
-                            jaqmEnergyStorage.removeEnergy(needed);
-                            markDirty();
+                            break;
                         }
                     }
+
                 }
             });
         }
     }
 
-    private List<ItemStack> getDrops(BlockState blockState) {
-        if (blockState != null) {
-            if (!blockState.getBlock().hasTileEntity(blockState)) {
-                return Block.getDrops(blockState, (ServerWorld) world, pos, null);
+
+    public void updateOreBlockState() {
+        this.oreBlockState = getOre();
+    }
+
+
+    public BlockState getOre() {
+        return JAQM.ORE_DISTRIBUTIONS.getOre(biome.get());
+    }
+
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        updateUpgradesCache();
+        updateOreBlockState();
+    }
+
+    public void updateUpgradesCache() {
+        outputHandles.clear();
+        inputHandles.clear();
+        for (Direction direction : DIRECTIONS) {
+            BlockPos blockPos = pos.offset(direction);
+            BlockState blockState = world.getBlockState(blockPos);
+            Block block = blockState.getBlock();
+            if(block instanceof IOreGiver) {
+                outputHandles.add(new SidedBlockHandler<>((IOreGiver) block, direction));
+            }
+            if(block instanceof IStoneSuppler) {
+                inputHandles.add(new SidedBlockHandler<>((IStoneSuppler) block, direction));
             }
         }
-        return Collections.emptyList();
+        Direction direction = world.getBlockState(pos).get(QuarryBlock.FACING);
+        Optional<ItemFrameEntity> itemFrameEntity = world.getEntitiesWithinAABB(ItemFrameEntity.class, new AxisAlignedBB(pos.offset(direction))).stream().findFirst();
+        biome.set(world.getBiome(pos));
+        itemFrameEntity.filter(itemFrameEntity1 -> itemFrameEntity1.getDisplayedItem().getItem() == JAQMItems.BIOME_MARKER.getItem()).ifPresent(itemFrameEntity1 -> biome.set(BiomeMakerItem.getBiome(itemFrameEntity1.getDisplayedItem().getStack())));
     }
+
 
     @Nonnull
     @Override
@@ -88,6 +129,7 @@ public class QuaryTileEntity extends TileEntity implements ITickableTileEntity {
         }
         return super.getCapability(cap, side);
     }
+
 
     @Override
     public void read(CompoundNBT tag) {

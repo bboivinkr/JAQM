@@ -1,6 +1,10 @@
 package com.unrealdinnerbone.juqm;
 
+import com.unrealdinnerbone.juqm.blocks.upgrades.block.BlockInputUpgradeBlock;
+import com.unrealdinnerbone.juqm.blocks.upgrades.block.BlockOutputUpgradeBlock;
 import com.unrealdinnerbone.juqm.blocks.QuarryBlock;
+import com.unrealdinnerbone.juqm.blocks.upgrades.chest.ChestInputUpgradeBlock;
+import com.unrealdinnerbone.juqm.blocks.upgrades.chest.ChestOutputUpgradeBlock;
 import com.unrealdinnerbone.juqm.util.IItemProperitesProvider;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
@@ -10,7 +14,11 @@ import java.util.function.Supplier;
 
 public enum JAQMBlocks
 {
-    QUARRY(QuarryBlock::new);
+    QUARRY(QuarryBlock::new),
+    CHEST_INPUT_UPGRADE(ChestInputUpgradeBlock::new),
+    CHEST_OUTPUT_UPGRADE(ChestOutputUpgradeBlock::new),
+    BLOCK_OUTPUT_UPGRADE(BlockOutputUpgradeBlock::new),
+    BLOCK_INPUT_UPGRADE(BlockInputUpgradeBlock::new);
 
     private final Block block;
     private BlockItem blockItem;
@@ -25,7 +33,6 @@ public enum JAQMBlocks
             this.blockItem = new BlockItem(block, ((IItemProperitesProvider) block).getItemProperties());
             this.blockItem.setRegistryName(resourceLocation);
         }
-
     }
 
     public Block getBlock() {

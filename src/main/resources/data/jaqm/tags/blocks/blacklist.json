@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "#forge:stone",
+    "#forge:dirt",
+    "#forge:gravel",
+    "wtbw_decoration:basalt_block",
+    "wtbw_decoration:limestone_block",
+    "wtbw_decoration:marble_block"
+  ]
+}

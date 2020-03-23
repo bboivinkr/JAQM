@@ -53,6 +53,7 @@ public class DataGenerator
             return super.hasItem(tagIn);
         }
 
+
         @Override
         public InventoryChangeTrigger.Instance hasItem(IItemProvider itemIn) {
             return super.hasItem(itemIn);

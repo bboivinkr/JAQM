@@ -40,8 +40,7 @@ public class RandomCollection<E> {
         return values;
     }
 
-    public E getRandomElement(Random random, List<E> list)
-    {
+    public E getRandomElement(Random random, List<E> list) {
         return list.get(random.nextInt(list.size()));
     }
 }

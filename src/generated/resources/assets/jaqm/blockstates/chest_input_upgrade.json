@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "jaqm:block/chest_input_upgrade",
+      "x": 180
+    },
+    "facing=up": {
+      "model": "jaqm:block/chest_input_upgrade"
+    },
+    "facing=north": {
+      "model": "jaqm:block/chest_input_upgrade",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "jaqm:block/chest_input_upgrade",
+      "x": 90,
+      "y": 180
+    },
+    "facing=west": {
+      "model": "jaqm:block/chest_input_upgrade",
+      "x": 90,
+      "y": 270
+    },
+    "facing=east": {
+      "model": "jaqm:block/chest_input_upgrade",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

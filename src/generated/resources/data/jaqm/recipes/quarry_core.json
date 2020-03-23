@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "jaqm",
+  "pattern": [
+    "OSO",
+    "OEO",
+    "OOO"
+  ],
+  "key": {
+    "O": {
+      "tag": "forge:obsidian"
+    },
+    "S": {
+      "item": "jaqm:biome_marker"
+    },
+    "E": {
+      "tag": "forge:nether_stars"
+    }
+  },
+  "result": {
+    "item": "jaqm:quarry_core"
+  }
+}

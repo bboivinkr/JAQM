@@ -1,13 +1,14 @@
 package com.unrealdinnerbone.juqm.energy;
 
+import com.unrealdinnerbone.juqm.util.config.JAQMConfig;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.energy.EnergyStorage;
 
 public class JAQMEnergyStorage extends EnergyStorage implements INBTSerializable<CompoundNBT> {
 
-    public JAQMEnergyStorage(int capacity, int maxReceive) {
-        super(capacity, maxReceive, 0);
+    public JAQMEnergyStorage(JAQMConfig.BlockConfig blockConfig) {
+        super(blockConfig.getMaxStorage(), blockConfig.getMaxReceive(), 0);
     }
 
     public void setEnergy(int energy) {
@@ -22,6 +23,10 @@ public class JAQMEnergyStorage extends EnergyStorage implements INBTSerializable
             this.energy -= amount;
             return 0;
         }
+    }
+
+    public boolean hasEnergy(int amount) {
+        return getEnergyStored() > amount;
     }
 
     @Override

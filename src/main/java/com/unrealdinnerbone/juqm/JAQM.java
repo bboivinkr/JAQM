@@ -2,30 +2,28 @@ package com.unrealdinnerbone.juqm;
 
 import com.unrealdinnerbone.juqm.events.DataGenerator;
 import com.unrealdinnerbone.juqm.events.RegisteryEvents;
+import com.unrealdinnerbone.juqm.events.ReloadEvent;
 import com.unrealdinnerbone.juqm.util.OreDistributions;
-import net.minecraft.command.Commands;
-import net.minecraft.entity.player.PlayerEntity;
+import com.unrealdinnerbone.juqm.util.config.JAQMConfig;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.DeferredWorkQueue;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 @Mod(JAQM.MOD_ID)
 @Mod.EventBusSubscriber
@@ -36,9 +34,9 @@ public class JAQM
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-    public static ForgeConfigSpec.IntValue maxStorage;
-    public static ForgeConfigSpec.IntValue maxReceive;
-    public static ForgeConfigSpec.IntValue usagePerBlock;
+    public static final JAQMConfig.BlockConfig QUARRY = JAQMConfig.createBlockConfig(BUILDER, "quarry", 1000000, 1000000, 10000);
+    public static final JAQMConfig.UpgradeConfig CHEST_UPGRADE = JAQMConfig.createUpgradeConfig(BUILDER, "chest",  10000);
+    public static final JAQMConfig.UpgradeConfig BLOCK_UPGRADE = JAQMConfig.createUpgradeConfig(BUILDER, "block",  2500);
 
     public static final OreDistributions ORE_DISTRIBUTIONS = new OreDistributions();
     public static final ItemGroup ITEM_GROUP = new ItemGroup(MOD_ID) {
@@ -49,18 +47,10 @@ public class JAQM
     };
 
     public JAQM() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(DataGenerator::onDataGen);
         RegisteryEvents.init();
-        MinecraftForge.EVENT_BUS.register(this);
-        BUILDER.push("general");
-        maxStorage = BUILDER.comment("The amount of FE the quarry can hold").defineInRange("maxStorage", 1000000, 1, Integer.MAX_VALUE);
-        maxReceive = BUILDER.comment("The amount of FE the quarry can receive per tick").defineInRange("maxReceive", 1000000, 1, Integer.MAX_VALUE);
-        usagePerBlock = BUILDER.comment("The amount of FE to use per ore change").defineInRange("usagePerBlock", 10000, 1, Integer.MAX_VALUE);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, BUILDER.build());
+        MinecraftForge.EVENT_BUS.addListener(ReloadEvent::onReload);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, BUILDER.build());
     }
 
-    private void setup(final FMLCommonSetupEvent event) {
-        DeferredWorkQueue.runLater(ORE_DISTRIBUTIONS::calculateChance).whenComplete((aVoid, throwable) -> LOGGER.info("Loaded Ore Chances for " + ForgeRegistries.BIOMES.getValues().size() + "Biomes"));
-    }
 }

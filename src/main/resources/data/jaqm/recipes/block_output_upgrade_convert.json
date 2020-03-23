@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "jaqm:block_input_upgrade"
+    }
+  ],
+  "result": {
+    "item": "jaqm:block_output_upgrade"
+  }
+}

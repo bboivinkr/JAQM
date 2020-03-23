@@ -61,11 +61,13 @@ public class BiomeMakerItem extends Item implements IRecipeCreater, IItemModelPr
 
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        ForgeRegistries.BIOMES.forEach(biome -> {
-            ItemStack itemStack = new ItemStack(this);
-            setBiome(itemStack, biome);
-            items.add(itemStack);
-        });
+        if(group == JAQM.ITEM_GROUP) {
+            ForgeRegistries.BIOMES.forEach(biome -> {
+                ItemStack itemStack = new ItemStack(this);
+                setBiome(itemStack, biome);
+                items.add(itemStack);
+            });
+        }
         super.fillItemGroup(group, items);
     }
 
@@ -74,14 +76,15 @@ public class BiomeMakerItem extends Item implements IRecipeCreater, IItemModelPr
         Biome biome = getBiome(stack);
         tooltip.add(new TranslationTextComponent("tooltip.biome_marker.biome", biome.getDisplayName()));
         if(InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), Minecraft.getInstance().gameSettings.keyBindSneak.getKey().getKeyCode())) {
-            JAQM.ORE_DISTRIBUTIONS.getBiomeOresMap().get(biome).getMap().forEach((key, value) -> {
-                key.getBlockState().getBlock().getRegistryName().toString();
-                double count = value;
-                double total = JAQM.ORE_DISTRIBUTIONS.getBiomeOresMap().get(biome).getTotal();
-                double chance = count / total;
-                DecimalFormat df = new DecimalFormat();
-                tooltip.add(new StringTextComponent(key.getBlockState().getBlock().getNameTextComponent().getFormattedText() + " @ " + df.format(chance * 100) + "%"));
-            });
+            JAQM.ORE_DISTRIBUTIONS.getOreChanceChache().get(biome).forEach((d, l) -> tooltip.addAll(l));
+//            JAQM.ORE_DISTRIBUTIONS.getBiomeOresMap().get(biome).getMap().forEach((key, value) -> {
+//                key.getBlockState().getBlock().getRegistryName().toString();
+//                double count = value;
+//                double total = JAQM.ORE_DISTRIBUTIONS.getBiomeOresMap().get(biome).getTotal();
+//                double chance = count / total;
+//                DecimalFormat df = new DecimalFormat();
+//                tooltip.add(new StringTextComponent(key.getBlockState().getBlock().getNameTextComponent().getFormattedText() + " @ " + df.format(chance * 100) + "%"));
+//            });
         }else {
             tooltip.add(new TranslationTextComponent("tooltip.biome_marker.usage"));
         }
@@ -120,7 +123,7 @@ public class BiomeMakerItem extends Item implements IRecipeCreater, IItemModelPr
 
     @Override
     public void registerModel(Item item, DataGenerator.ItemModelProvider itemModelProvider) {
-        itemModelProvider.itemGenerated(item, new ResourceLocation(JAQM.MOD_ID, "block/quarry/front"));
+        itemModelProvider.itemGenerated(item, new ResourceLocation(JAQM.MOD_ID, "item/biome_finder"));
     }
 
 

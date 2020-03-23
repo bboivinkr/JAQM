@@ -4,5 +4,11 @@
   "block.jaqm.quarry" : "Quarry",
   "message.setBiomeTo" : "Set Biome To: %s",
   "tooltip.biome_marker.usage" : "Put in itemframe attached to front of quarry",
-  "itemGroup.jaqm" : "Just Another Quarry Mod"
+  "itemGroup.jaqm" : "Just Another Quarry Mod",
+  "tooltip.upgrade.cost" : "Cost: %s",
+  "block.jaqm.block_output_upgrade" : "Block Output Upgrade",
+  "block.jaqm.block_input_upgrade" : "Block Input Upgrade",
+  "block.jaqm.chest_output_upgrade" : "Chest Output Upgrade",
+  "block.jaqm.chest_input_upgrade" : "Chest Input Upgrade",
+  "item.jaqm.quarry_core" : "Quarry Core"
 }

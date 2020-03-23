@@ -46,7 +46,7 @@ repositories {
 
 minecraft {
     mappings channel: 'snapshot', version: "${mcp_mappings}"
-
+    accessTransformer = project.file("src/main/resources/META-INF/accesstransformer.cfg")
     runs {
         client {
             workingDirectory project.file('run')
@@ -74,7 +74,7 @@ dependencies {
     runtimeOnly fg.deobf("com.wtbw.mods:wtbw_tools-1.15.2:1.0.10")
     runtimeOnly fg.deobf("com.wtbw.mods:wtbw_decoration-1.15.2:1.0.9")
     runtimeOnly fg.deobf("mcjty.theoneprobe:TheOneProbe-${top_version}")
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    minecraft "net.minecraftforge:forge:1.15.2-31.1.27"
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

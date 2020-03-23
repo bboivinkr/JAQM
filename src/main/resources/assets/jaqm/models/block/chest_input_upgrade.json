@@ -1,0 +1,7 @@
+{
+  "parent": "block/orientable_vertical",
+  "textures": {
+    "side": "jaqm:block/upgrades/chest/side",
+    "front": "jaqm:block/upgrades/chest/in"
+  }
+}

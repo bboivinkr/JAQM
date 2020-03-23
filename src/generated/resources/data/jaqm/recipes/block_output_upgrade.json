@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "WTW",
+    "WCW",
+    "WHW"
+  ],
+  "key": {
+    "W": {
+      "tag": "forge:stone"
+    },
+    "H": {
+      "item": "minecraft:hopper"
+    },
+    "C": {
+      "item": "jaqm:quarry_core"
+    },
+    "T": {
+      "tag": "forge:chests"
+    }
+  },
+  "result": {
+    "item": "jaqm:block_output_upgrade"
+  }
+}
